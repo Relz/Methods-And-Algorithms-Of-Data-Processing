@@ -2,7 +2,7 @@
 
 project ("DijkstraAlgorithmViaBinaryHeap")
 
-ADD_SUBDIRECTORY("Input-Library")
+add_subdirectory("Input-Library")
 
 add_executable (DijkstraAlgorithmViaBinaryHeap "main.cpp")
 target_link_libraries(DijkstraAlgorithmViaBinaryHeap InputLibrary)
