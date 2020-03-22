@@ -1,164 +1,182 @@
 ﻿#include "Input-Library/Input.h"
+#include <algorithm>
 #include <iostream>
-#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-using namespace std;
-
-struct Relation
+class Relation
 {
+public:
 	Relation(unsigned cityId, unsigned distance)
-		: cityId(cityId)
-		, distance(distance)
+		: m_cityId(cityId)
+		, m_distance(distance)
 	{}
 
-	unsigned cityId;
-	unsigned distance;
+	unsigned GetCityId() const
+	{
+		return m_cityId;
+	}
+
+	unsigned GetDistance() const
+	{
+		return m_distance;
+	}
 
 	bool operator<(Relation const & rhs) const
 	{
-		return distance < rhs.distance;
+		return m_distance < rhs.m_distance;
 	}
+
+	bool operator>(Relation const & rhs) const
+	{
+		return m_distance > rhs.m_distance;
+	}
+
+private:
+	unsigned m_cityId;
+	unsigned m_distance;
 };
 
-vector<unsigned> InitializeMinDistances(unsigned vertexCount, unsigned firstVertexIndex);
-vector<unsigned> InitializePreviousCities(unsigned vertexCount, unsigned firstVertexIndex);
-vector<unsigned> GetMinWay(
-	unsigned firstCityId,
-	unsigned lastCityId,
-	vector<unsigned> const & minDistances,
-	vector<unsigned> const & previousCities);
+std::vector<unsigned> InitializeMinDistances(unsigned vertexCount, unsigned firstVertexIndex);
+std::vector<unsigned> InitializePreviousCities(unsigned vertexCount, unsigned firstVertexIndex);
+std::vector<unsigned> GetMinWay(unsigned firstCityId, unsigned lastCityId, std::vector<unsigned> const & previousCities);
 template<typename T>
-void PrintVector(vector<T> const & vector, string const & separator);
+void PrintVector(std::vector<T> const & vector, std::string const & separator);
 
 int main()
 {
-	Input input("INPUT.TXT");
-
-	unsigned cityCount;
-	if (!input.ReadArguments(false, cityCount))
+	try
 	{
-		cerr << "Unable to read city count from input." << endl;
-		return EXIT_FAILURE;
-	}
+		Input input("INPUT.TXT");
 
-	unsigned roadCount;
-	if (!input.ReadArguments(false, roadCount))
-	{
-		cerr << "Unable to read road count from input." << endl;
-		return EXIT_FAILURE;
-	}
-
-	unsigned firstCityId;
-	if (!input.ReadArguments(false, firstCityId))
-	{
-		cerr << "Unable to read first city id from input." << endl;
-		return EXIT_FAILURE;
-	}
-
-	unsigned lastCityId;
-	if (!input.ReadArguments(false, lastCityId))
-	{
-		cerr << "Unable to read last city id from input." << endl;
-		return EXIT_FAILURE;
-	}
-
-	input.SkipLine();
-
-	vector<unsigned> minDistances = InitializeMinDistances(cityCount, firstCityId);
-	vector<unsigned> previousCities = InitializePreviousCities(cityCount, firstCityId);
-
-	set<Relation> relations = { Relation(firstCityId, 0) };
-	unordered_set<unsigned> visitedCities;
-	unordered_map<unsigned, set<Relation>> cityIdsRelations;
-
-	for (unsigned i = 0; i < roadCount; ++i)
-	{
-		unsigned sourceCityId;
-		if (!input.ReadArguments(false, sourceCityId))
+		unsigned cityCount;
+		if (!input.ReadArguments(false, cityCount))
 		{
-			cerr << "Unable to read source city id, line: " << (i + 1) << endl;
+			std::cerr << "Unable to read city count from input." << std::endl;
 			return EXIT_FAILURE;
 		}
 
-		unsigned destinationCityId;
-		if (!input.ReadArguments(false, destinationCityId))
+		unsigned roadCount;
+		if (!input.ReadArguments(false, roadCount))
 		{
-			cerr << "Unable to read destination city id, line: " << (i + 1) << endl;
+			std::cerr << "Unable to read road count from input." << std::endl;
 			return EXIT_FAILURE;
 		}
 
-		unsigned distance;
-		if (!input.ReadArguments(false, distance))
+		unsigned firstCityId;
+		if (!input.ReadArguments(false, firstCityId))
 		{
-			cerr << "Unable to read distance, line: " << (i + 1) << endl;
+			std::cerr << "Unable to read first city id from input." << std::endl;
+			return EXIT_FAILURE;
+		}
+
+		unsigned lastCityId;
+		if (!input.ReadArguments(false, lastCityId))
+		{
+			std::cerr << "Unable to read last city id from input." << std::endl;
 			return EXIT_FAILURE;
 		}
 
 		input.SkipLine();
 
-		cityIdsRelations[sourceCityId].emplace(Relation(destinationCityId, distance));
-		cityIdsRelations[destinationCityId].emplace(Relation(sourceCityId, distance));
-	}
+		std::vector<unsigned> minDistances = InitializeMinDistances(cityCount, firstCityId);
+		std::vector<unsigned> previousCities = InitializePreviousCities(cityCount, firstCityId);
 
-	while (!relations.empty())
-	{
-		Relation const & relation = *relations.begin();
+		std::unordered_map<unsigned, std::vector<Relation>> cityIdsRelations;
 
-		if (visitedCities.find(relation.cityId) != visitedCities.end())
+		for (unsigned i = 0; i < roadCount; ++i)
 		{
-			relations.erase(relation);
-			continue;
-		}
-
-		set<Relation> const & cityRelations = cityIdsRelations[relation.cityId];
-		for (Relation const & cityRelation : cityRelations)
-		{
-			unsigned newDistance = relation.distance + cityRelation.distance;
-			if (newDistance < minDistances[cityRelation.cityId])
+			unsigned sourceCityId;
+			if (!input.ReadArguments(false, sourceCityId))
 			{
-				minDistances[cityRelation.cityId] = newDistance;
-				previousCities[cityRelation.cityId] = relation.cityId;
-				relations.emplace(Relation(cityRelation.cityId, newDistance));
+				std::cerr << "Unable to read source city id, line: " << (i + 1) << std::endl;
+				return EXIT_FAILURE;
 			}
+
+			unsigned destinationCityId;
+			if (!input.ReadArguments(false, destinationCityId))
+			{
+				std::cerr << "Unable to read destination city id, line: " << (i + 1) << std::endl;
+				return EXIT_FAILURE;
+			}
+
+			unsigned distance;
+			if (!input.ReadArguments(false, distance))
+			{
+				std::cerr << "Unable to read distance, line: " << (i + 1) << std::endl;
+				return EXIT_FAILURE;
+			}
+
+			input.SkipLine();
+
+			cityIdsRelations[sourceCityId].emplace_back(Relation(destinationCityId, distance));
+			cityIdsRelations[destinationCityId].emplace_back(Relation(sourceCityId, distance));
 		}
-		visitedCities.emplace(relation.cityId);
 
-		relations.erase(relation);
+		std::vector<Relation> relations{ Relation(firstCityId, 0) };
+		std::make_heap(relations.begin(), relations.end(), std::greater<>{});
+
+		std::unordered_set<unsigned> visitedCities;
+
+		while (!relations.empty())
+		{
+			pop_heap(relations.begin(), relations.end(), std::greater<>{});
+			Relation relation = relations.back();
+			relations.pop_back();
+
+			if (visitedCities.find(relation.GetCityId()) != visitedCities.end())
+			{
+				continue;
+			}
+
+			std::vector<Relation> const & cityRelations = cityIdsRelations[relation.GetCityId()];
+			for (Relation const & cityRelation : cityRelations)
+			{
+				unsigned newDistance = relation.GetDistance() + cityRelation.GetDistance();
+				if (newDistance < minDistances[cityRelation.GetCityId()])
+				{
+					minDistances[cityRelation.GetCityId()] = newDistance;
+					previousCities[cityRelation.GetCityId()] = relation.GetCityId();
+					relations.emplace_back(Relation(cityRelation.GetCityId(), newDistance));
+					push_heap(relations.begin(), relations.end(), std::greater<>{});
+				}
+			}
+			visitedCities.emplace(relation.GetCityId());
+		}
+
+		std::vector<unsigned> minWay = GetMinWay(firstCityId, lastCityId, previousCities);
+		std::cout << minDistances[lastCityId] << std::endl;
+		PrintVector(minWay, " ");
+		std::cout << std::endl;
+
+		return EXIT_SUCCESS;
 	}
-
-	vector<unsigned> minWay = GetMinWay(firstCityId, lastCityId, minDistances, previousCities);
-	cout << minDistances[lastCityId] << endl;
-	PrintVector(minWay, " ");
-	cout << endl;
-
-	return EXIT_SUCCESS;
+	catch (std::exception & exception)
+	{
+		std::cerr << exception.what() << std::endl;
+		return EXIT_FAILURE;
+	}
 }
 
-vector<unsigned> InitializeMinDistances(unsigned vertexCount, unsigned firstVertexIndex)
+std::vector<unsigned> InitializeMinDistances(unsigned vertexCount, unsigned firstVertexIndex)
 {
-	vector<unsigned> result(vertexCount + 1, UINT_MAX);
+	std::vector<unsigned> result(vertexCount + 1, UINT_MAX);
 	result[firstVertexIndex] = 0;
 	return result;
 }
 
-vector<unsigned> InitializePreviousCities(unsigned vertexCount, unsigned firstVertexIndex)
+std::vector<unsigned> InitializePreviousCities(unsigned vertexCount, unsigned firstVertexIndex)
 {
-	vector<unsigned> result(vertexCount + 1, UINT_MAX);
+	std::vector<unsigned> result(vertexCount + 1, UINT_MAX);
 	result[firstVertexIndex] = 0;
 	return result;
 }
 
-vector<unsigned> GetMinWay(
-	unsigned firstCityId,
-	unsigned lastCityId,
-	vector<unsigned> const & minDistances,
-	vector<unsigned> const & previousCities)
+std::vector<unsigned> GetMinWay(unsigned firstCityId, unsigned lastCityId, std::vector<unsigned> const & previousCities)
 {
-	vector<unsigned> result;
+	std::vector<unsigned> result;
 
 	unsigned cityId = lastCityId;
 	while (cityId != firstCityId)
@@ -173,14 +191,14 @@ vector<unsigned> GetMinWay(
 }
 
 template<typename T>
-void PrintVector(vector<T> const & vector, string const & separator)
+void PrintVector(std::vector<T> const & vector, std::string const & separator)
 {
 	for (size_t i = 0; i < vector.size(); ++i)
 	{
-		cout << vector[i];
+		std::cout << vector[i];
 		if (i != vector.size() - 1)
 		{
-			cout << separator;
+			std::cout << separator;
 		}
 	}
 }
