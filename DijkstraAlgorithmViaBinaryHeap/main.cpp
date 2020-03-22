@@ -1,43 +1,11 @@
 ﻿#include "Input-Library/Input.h"
+#include "Relation/Relation.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-
-class Relation
-{
-public:
-	Relation(unsigned cityId, unsigned distance)
-		: m_cityId(cityId)
-		, m_distance(distance)
-	{}
-
-	unsigned GetCityId() const
-	{
-		return m_cityId;
-	}
-
-	unsigned GetDistance() const
-	{
-		return m_distance;
-	}
-
-	bool operator<(Relation const & rhs) const
-	{
-		return m_distance < rhs.m_distance;
-	}
-
-	bool operator>(Relation const & rhs) const
-	{
-		return m_distance > rhs.m_distance;
-	}
-
-private:
-	unsigned m_cityId;
-	unsigned m_distance;
-};
 
 std::vector<unsigned> InitializeMinDistances(unsigned vertexCount, unsigned firstVertexIndex);
 std::vector<unsigned> InitializePreviousCities(unsigned vertexCount, unsigned firstVertexIndex);
