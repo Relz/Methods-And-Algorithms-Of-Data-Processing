@@ -130,14 +130,14 @@ int main()
 
 std::vector<unsigned> InitializeMinDistances(unsigned vertexCount, unsigned firstVertexIndex)
 {
-	std::vector<unsigned> result(vertexCount + 1, UINT_MAX);
+	std::vector<unsigned> result(vertexCount + 1, std::numeric_limits<unsigned>::max());
 	result[firstVertexIndex] = 0;
 	return result;
 }
 
 std::vector<unsigned> InitializePreviousCities(unsigned vertexCount, unsigned firstVertexIndex)
 {
-	std::vector<unsigned> result(vertexCount + 1, UINT_MAX);
+	std::vector<unsigned> result(vertexCount + 1, std::numeric_limits<unsigned>::max());
 	result[firstVertexIndex] = 0;
 	return result;
 }
