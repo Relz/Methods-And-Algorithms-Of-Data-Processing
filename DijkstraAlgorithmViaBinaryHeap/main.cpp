@@ -1,4 +1,4 @@
-﻿#include "Input-Library/Input.h"
+#include "Input-Library/Input.h"
 #include "Relation/Relation.h"
 #include <algorithm>
 #include <iostream>
@@ -13,11 +13,18 @@ std::vector<unsigned> GetMinWay(unsigned firstCityId, unsigned lastCityId, std::
 template<typename T>
 void PrintVector(std::vector<T> const & vector, std::string const & separator);
 
-int main()
+int main(int argc, char * argv[])
 {
 	try
 	{
-		Input input("INPUT.TXT");
+		if (argc != 2)
+		{
+			std::cerr << "Usage: DijkstraAlgorithmViaBinaryHeap <input file>" << std::endl;
+			return EXIT_FAILURE;
+		}
+		std::string inputFileName
+			= argv[1]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic): Use span when C++20 become available
+		Input input(inputFileName);
 
 		unsigned cityCount;
 		if (!input.ReadArguments(false, cityCount))
