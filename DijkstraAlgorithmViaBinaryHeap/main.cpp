@@ -1,3 +1,17 @@
+﻿/*
+ Алгоритм Дейкстры на бинарной куче.
+ Алексей Старовойтов, Илья Романов.
+ Протестировано на Windows 10 (Build 1909), ArchLinux (Linux 5.5.8-arch1-1).
+ Проект является CMake-проектом (Поддерживается в Visual Studio 2017+).
+ Чтобы собрать программу на Windows, нужно запустить Visual Studio, открыть директорию проекта и собрать проект,
+ используя возможности IDE. Собранная программа будет находиться в директории "out/build/(Debug|Release)".
+ Пример использования:
+ 1. С выводом в консоль:
+ ./DijkstraAlgorithmViaBinaryHeap input.txt
+ 2. С выводом в файл:
+ ./DijkstraAlgorithmViaBinaryHeap input.txt >> output.txt
+*/
+
 #include "Input-Library/Input.h"
 #include "Relation/Relation.h"
 #include <algorithm>
