@@ -12,9 +12,9 @@
  ./DijkstraAlgorithmViaBinaryHeap input.txt >> output.txt
 */
 
-#include "Input-Library/Input.h"
 #include "Relation/Relation.h"
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -27,48 +27,19 @@ std::vector<unsigned> GetMinWay(unsigned firstCityId, unsigned lastCityId, std::
 template<typename T>
 void PrintVector(std::vector<T> const & vector, std::string const & separator);
 
-int main(int argc, char * argv[])
+int main(int /*argc*/, char * argv[])
 {
 	try
 	{
-		if (argc != 2)
-		{
-			std::cerr << "Usage: DijkstraAlgorithmViaBinaryHeap <input file>" << std::endl;
-			return EXIT_FAILURE;
-		}
 		std::string inputFileName
 			= argv[1]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic): Use span when C++20 become available
-		Input input(inputFileName);
+		std::ifstream input(inputFileName);
 
 		unsigned cityCount;
-		if (!input.ReadArguments(false, cityCount))
-		{
-			std::cerr << "Unable to read city count from input." << std::endl;
-			return EXIT_FAILURE;
-		}
-
 		unsigned roadCount;
-		if (!input.ReadArguments(false, roadCount))
-		{
-			std::cerr << "Unable to read road count from input." << std::endl;
-			return EXIT_FAILURE;
-		}
-
 		unsigned firstCityId;
-		if (!input.ReadArguments(false, firstCityId))
-		{
-			std::cerr << "Unable to read first city id from input." << std::endl;
-			return EXIT_FAILURE;
-		}
-
 		unsigned lastCityId;
-		if (!input.ReadArguments(false, lastCityId))
-		{
-			std::cerr << "Unable to read last city id from input." << std::endl;
-			return EXIT_FAILURE;
-		}
-
-		input.SkipLine();
+		input >> cityCount >> roadCount >> firstCityId >> lastCityId;
 
 		std::vector<unsigned> minDistances = InitializeMinDistances(cityCount, firstCityId);
 		std::vector<unsigned> previousCities = InitializePreviousCities(cityCount, firstCityId);
@@ -78,27 +49,10 @@ int main(int argc, char * argv[])
 		for (unsigned i = 0; i < roadCount; ++i)
 		{
 			unsigned sourceCityId;
-			if (!input.ReadArguments(false, sourceCityId))
-			{
-				std::cerr << "Unable to read source city id, line: " << (i + 1) << std::endl;
-				return EXIT_FAILURE;
-			}
-
 			unsigned destinationCityId;
-			if (!input.ReadArguments(false, destinationCityId))
-			{
-				std::cerr << "Unable to read destination city id, line: " << (i + 1) << std::endl;
-				return EXIT_FAILURE;
-			}
-
 			unsigned distance;
-			if (!input.ReadArguments(false, distance))
-			{
-				std::cerr << "Unable to read distance, line: " << (i + 1) << std::endl;
-				return EXIT_FAILURE;
-			}
 
-			input.SkipLine();
+			input >> sourceCityId >> destinationCityId >> distance;
 
 			cityIdsRelations[sourceCityId].emplace_back(Relation(destinationCityId, distance));
 			cityIdsRelations[destinationCityId].emplace_back(Relation(sourceCityId, distance));
